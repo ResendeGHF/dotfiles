@@ -146,6 +146,17 @@ source_readable /usr/share/doc/fzf/examples/key-bindings.bash
 source_readable /usr/share/doc/fzf/examples/completion.bash
 ## }}}
 ## {{{ End
+## Source modular user configuration, then local override.
+## Each file in ~/.bashrc.d/ must be a regular file (e.g. aliases.sh).
+if test -d "${HOME}/.bashrc.d"; then
+  for _bashrc_d in "${HOME}"/.bashrc.d/*; do
+    test -f "${_bashrc_d}" || continue
+    test -r "${_bashrc_d}" || continue
+    # shellcheck disable=SC1090
+    . "${_bashrc_d}"
+  done
+  unset _bashrc_d
+fi
 ## Source local bash configuration.
 source_readable "${HOME}/.bashrc.local"
 ## }}}

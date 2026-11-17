@@ -47,7 +47,7 @@ PATH="${PATH}:/usr/local/games:/usr/games"
 INFOPATH="${HOME}/.local/share/info:/usr/local/share/info:/usr/local/info"
 INFOPATH="${INFOPATH}:/usr/share/info:/usr/info"
 MANPATH="${HOME}/.local/share/man:/usr/local/man:/usr/local/share/man"
-MANPATH="${MANPATH}:/usr/X11R6/man:/opt/man:/snap/man:/usr/man:/usr/share/man"
+MANPATH="${MANPATH}:/opt/man:/snap/man:/usr/man:/usr/share/man"
 ENV="${SHDIR}/shrc"
 BASH_ENV="${BASHDIR}/bash_env"
 TMPDIR="/tmp"
@@ -61,7 +61,7 @@ export PATH INFOPATH MANPATH ENV TMPDIR LANG LANGUAGE LC_ALL GNUPGHOME
 HISTSIZE=10000
 EDITOR="$(has -s vim vim.tiny vi)"
 test -n "${EDITOR}" && VISUAL="${EDITOR}"
-TERMINAL="x-terminal-emulator"
+TERMINAL="foot"
 BROWSER="chromium"
 PAGER="less"
 LESS="FRq#10"
@@ -69,13 +69,8 @@ GPG_TTY="$(tty)"
 BLOCKSIZE="K"
 RSYNC_RSH="ssh -ax"
 SYSTEMD_PAGER=""
-if test -s /rw/config/gpg-split-domain; then
-  read -r QUBES_GPG_DOMAIN < /rw/config/gpg-split-domain
-else
-  QUBES_GPG_DOMAIN="@default"
-fi
 export HISTSIZE EDITOR VISUAL TERMINAL BROWSER PAGER LESS GPG_TTY BLOCKSIZE
-export RSYNC_RSH SYSTEMD_PAGER QUBES_GPG_DOMAIN
+export RSYNC_RSH SYSTEMD_PAGER
 
 if has fd; then
   FZF_DEFAULT_COMMAND='fd --type=f --hidden --exclude=.git'

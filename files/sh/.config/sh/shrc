@@ -57,10 +57,6 @@ has pygmentize && alias pygmentize="pygmentize -f terminal"
 
 ## Helpers.
 alias reload='. ${ENV}' r="reload"
-if test -f "${XDG_CONFIG_HOME:-${HOME}/.config}/x11/xprofile"; then
-  alias reload-xprofile='. ${XDG_CONFIG_HOME:-${HOME}/.config}/x11/xprofile'
-  alias rx="reload-xprofile"
-fi
 cd_up(){
   # SPDX-FileCopyrightText: 2014 Grigory K <https://stackoverflow.com/users/2937875/grigory-k>
   # SPDX-License-Identifier: CC-BY-SA-3.0
@@ -107,16 +103,6 @@ has htop && alias top="htop"
 has yt-dlp && alias yt="yt-dlp --add-metadata -ic"
 has fdfind && alias fd="fdfind"
 has lynx && alias lynx="lynx -vikeys"
-has qubesctl && {
-  alias qctl="qubesctl"
-  alias qctls="qctl state.apply"
-  alias qctlu="qctl --skip-dom0 --targets"
-  qctlus(){
-    test -n "${2-}" || return 1
-    # shellcheck disable=SC3058
-    qubesctl --skip-dom0 --targets "${1}" state.apply "${@#"${1}"}"
-  }
-}
 has gpg && alias gpgs="gpg --show-keys"
 ## {{{ Tmux
 has tmux && {

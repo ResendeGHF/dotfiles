@@ -1,0 +1,4 @@
+# Keep this directory installed as ~/.bashrc.d/.
+# Put modular snippets here, e.g. aliases.sh.
+# Sourced by ~/.config/bash/bashrc before ~/.bashrc.local.
+!.gitignore

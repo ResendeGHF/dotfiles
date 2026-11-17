@@ -2,7 +2,6 @@
 ; vim: ft=gitconfig
 
 ; SPDX-FileCopyrightText: 2010 - 2017 Tim Pope <https://tpo.pe>
-; SPDX-FileCopyrightText: 2016 The Qubes OS Project <https://www.qubes-os.org>
 ; SPDX-FileCopyrightText: 2023 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ;
 ; SPDX-License-Identifier: GPL-2.0-only
@@ -151,8 +150,6 @@
 	tool = vimdiff
 	conflictStyle = diff3
 	summary = true
-[protocol "qrexec"]
-	allow = always
 [pull]
 	; Rebase does not verify signatures. Opt does not prevent manual rebase.
 	rebase = false
@@ -174,7 +171,5 @@
 	gpgSign = true
 [user]
 	hideTimezone = true
-[includeIf "gitdir:~/**/qubes-*/**"]
-	path = ~/.config/git/config.d/qubes-devel
 [include]
 	path = ~/.gitconfig.local

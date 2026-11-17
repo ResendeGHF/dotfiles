@@ -1,0 +1,37 @@
+# Basic
+color=2e2e2e
+indicator-radius=75
+indicator-thickness=8
+
+# Inside circle colors (Background)
+inside-color=2e2e2e
+inside-clear-color=2e2e2e
+inside-caps-lock-color=2e2e2e
+inside-ver-color=005577
+inside-wrong-color=2e2e2e
+
+# Ring colors (Borders)
+ring-color=444444
+ring-clear-color=eeeeee
+ring-caps-lock-color=005577
+ring-ver-color=005577
+ring-wrong-color=cc3333
+
+# Keystroke highlights
+key-hl-color=eeeeee
+bs-hl-color=cc3333
+
+# Text colors
+text-color=eeeeee
+text-clear-color=2e2e2e
+text-caps-lock-color=eeeeee
+text-ver-color=eeeeee
+text-wrong-color=cc3333
+
+# Remove segment lines
+line-color=2e2e2e
+line-clear-color=2e2e2e
+line-caps-lock-color=2e2e2e
+line-ver-color=2e2e2e
+line-wrong-color=2e2e2e
+separator-color=2e2e2e

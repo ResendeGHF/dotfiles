@@ -7,16 +7,15 @@ SPDX-FileCopyrightText: 2024 seven-beep <ebn@entreparentheses.xyz>
 SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
-Dotfiles.
+Dotfiles for Fedora Sway Atomic (Wayland).
 
 ## Table of Contents
 
 *   [Description](#description)
 *   [Installation](#installation)
-    *   [Salt](#salt)
-        *   [Pillar](#pillar)
-            *   [Pillar example](#pillar-example)
-    *   [Script](#script)
+    *   [Interactive](#interactive)
+    *   [Non-interactive](#non-interactive)
+    *   [Per-component](#per-component)
 *   [Usage](#usage)
 *   [License](#license)
 
@@ -29,104 +28,66 @@ Configuration and scripts targeting:
     *   Emacs keybindings for command-line editing
     *   XDG Specification to not clutter $HOME
 *   Portability:
-    *   POSIX compliant code
+    *   POSIX compliant shell code, no network fetches
     *   Drop-in configuration files
-    *   Tested in Qubes OS Dom0, Debian, Fedora, OpenBSD
+    *   Tested on Fedora Sway Atomic (Wayland)
 *   Tasks:
-    *   GUI: x11, gtk
+    *   GUI: sway, waybar, rofi, swaylock, sddm theme, gtk
     *   SCM: git, tig, git-shell
     *   Keys: gpg, ssh
     *   Networking: curl, urlview, wget, w3m
     *   Productivity: tmux, vim
     *   Shell: sh, bash, zsh, less, dircolors
 
+Principles (suckless): minimal, secure, explicit. Installers only touch
+paths they ship, set strict modes (`0600`/`0700` for pgp and ssh,
+`0644` plus `0700`/`0755` dirs elsewhere), preserve symlinks, never
+follow them for chmod, and back up a differing `~/.ssh/config` instead
+of silently overwriting it. No `curl | sh`, no package installation.
+
 ## Installation
 
-### Salt
+Installers live per component at `files/<component>/install.sh`.
+The global installer at `./install.sh` calls them. Everything installs
+to `$HOME`, except `sddm` which installs a system theme to
+`/etc/sddm/themes/suckless` and `/etc/sddm.conf.d/` (the only component
+that needs root, via `sudo` or a root shell).
 
-The formula is part of [Qusal](https://github.com/ben-grande/qusal/issues/43),
-which is designed to work in [Qubes OS](https://www.qubes-os.org/), as such,
-it chooses the first user name in the group `qubes` to place the dotfiles in.
-If you want a machine independent installation, choose the [Script](#script)
-installation method.
+### Interactive
 
-Install everything in a qube:
-
-```sh
-sudo qubesctl --skip-dom0 --targets=QUBE state.apply dotfiles.copy-all
-```
-
-Install specific files in Dom0:
+With no arguments, `./install.sh` prints a numbered menu and lets you
+pick components (empty input installs all):
 
 ```sh
-sudo qubesctl state.apply dotfiles.copy-dom0,dotfiles.copy-sh,dotfiles.copy-vim,dotfiles.copy-x11
+./install.sh
 ```
 
-#### Pillar
+### Non-interactive
 
-By default, all states are executed when applied. Each component can be be
-deactivated by configuring the corresponding pillar data to a non true value.
-
-You will need a top and a state file in your `pillar_roots`. If you followed
-[Qusal's installation instructions](https://github.com/ben-grande/qusal/blob/main/docs/INSTALL.md),
-it has already configured the setting for you using the value
-`/srv/pillar/qusal`. What you can do, is selectively enable or disable
-components.
-
-For a complete example of a pillar state and a list of their corresponding
-formulas states, please refer to [pillar.sls.example](pillar.sls.example).
-
-##### Pillar example
-
-On the following example, we will selectively disable only the `dom0`
-component, therefore, the state `copy-dom0.sls` is not applied to `dom0`:
-
-Create a pillar top to apply to all targets, write it to
-`/srv/pillar/qusal/dotfiles.top`:
-
-```yaml
-base:
-  '*':
-    - qusal.dotfiles
-```
-
-Then, create a pillar state do disable only `dom0` states, write it to
-`/srv/pillar/qusal/dotfiles.sls`:
-
-```yaml
-qusal:
-  dotfiles:
-    dom0: false
-```
-
-Add the pillar to the highstate:
+Install everything:
 
 ```sh
-sudo qubesctl top.enable qusal.dotfiles pillar=true
+./install.sh --all
 ```
 
-From now on, when calling the state `copy-dom0.sls`, it won't execute
-anything.
-
-### Script
-
-You can simply deploy all configurations with:
+Install a subset:
 
 ```sh
-./files/setup.sh
+./install.sh sh git ssh vim sway waybar
 ```
 
-Or target specific ones by specifying the directory name:
+List components:
 
 ```sh
-./files/setup.sh sh bash
+./install.sh --list
 ```
 
-Note that some files might depend on other directories, specially `sh` which
-is a base for `bash` and `zsh` but might also have environment variables for
-`net` and `vim`. It also adds `$HOME/.local/bin` and
-`$HOME/.local/bin/$HOSTNAME` to the `$PATH` variable, so if the project has
-scripts, install the `sh` directory.
+Note that some files depend on other directories, specially `sh` which
+is a base for `bash` and `zsh` but also sets environment variables for
+`net` and `vim`. It adds `$HOME/.local/bin` and
+`$HOME/.local/bin/$HOSTNAME` to `$PATH`, so install `sh` if you use
+any shipped script. `bash` reads modular snippets from `~/.bashrc.d/`
+(sourced before `~/.bashrc.local`).
 
 Reload your shell:
 
@@ -134,29 +95,40 @@ Reload your shell:
 exec $SHELL
 ```
 
-Reload you X server:
+Reload sway after changing its configuration:
 
 ```sh
-. ~/.config/x11/xprofile
+swaymsg reload
 ```
 
 You need to logout and login again for some changes to take effect.
 
+### Per-component
+
+Each component is standalone (no shared framework to audit):
+
+```sh
+sh files/sh/install.sh
+sh files/sway/install.sh
+sh files/waybar/install.sh
+sh files/sddm/install.sh   # needs root for /etc writes
+```
+
 ## Usage
 
-The deployment replaces existing files and that is the goal, to make sure that
-we have the same configuration of every machine. Support for local
-configuration is implemented by including a local file per application.
+The deployment replaces managed files and that is the goal, to make sure
+that we have the same configuration on every machine. Support for local
+configuration is implemented by including a local file per application;
+installers never delete these.
 
 Supported programs and the expected file names in `$HOME`:
 
-*   **bash**: .bashrc.local
+*   **bash**: .bashrc.d/ (modular snippets), .bashrc.local
 *   **git**:  .gitconfig.local
 *   **sh**:   .profile.local, .shrc.local, .config/sh/profile.d/ (.sh suffix)
 *   **ssh**:  .ssh/config.d/ (.conf suffix), .ssh/known_hosts.d/ (.host suffix)
 *   **tmux**: .tmux.conf.local
 *   **vim**:  .vimrc.local
-*   **x11**:  .xprofile.local, .config/x11/xprofile.d/ (.sh suffix)
 *   **zsh**:  .zshrc.local
 
 ## License
